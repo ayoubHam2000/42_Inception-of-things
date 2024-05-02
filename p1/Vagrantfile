@@ -1,0 +1,50 @@
+Vagrant.configure("2") do |config|
+
+  
+
+  vm_cpus = 1
+  vm_ram = "2048"
+  vm_server_name = "aben-hamS"
+  vm_worker_name = "aben-hamSW"
+  vm_server_ip = "192.168.56.110"
+  vm_worker_ip = "192.168.56.111"
+
+
+  #config.vm.box = "generic/centos8"
+  #config.vm.box = "ubuntu/xenial64"
+  config.vm.box = "generic/alpine318"
+  #config.vm.box = "generic/centos7"
+  config.vm.synced_folder ".", "/vagrant", disabled: false
+
+  config.vm.define vm_server_name do |server|
+    #server.vm.box = vm_box
+    server.vm.hostname = vm_server_name
+    server.vm.network "private_network", ip: vm_server_ip
+
+    
+    server.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--name", vm_server_name]
+      vb.memory = vm_ram
+      vb.cpus = vm_cpus
+    end
+
+    #server.vm.provision "shell", path: "scripts/server_provision.sh"
+  end
+
+  config.vm.define vm_worker_name do |worker|
+    #worker.vm.box = vm_box
+    worker.vm.hostname = vm_worker_name
+    worker.vm.network "private_network", ip: vm_worker_ip
+    
+
+    worker.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--name", vm_worker_name]
+      vb.memory = vm_ram
+      vb.cpus = vm_cpus
+    end
+
+    #worker.vm.provision "shell", path: "scripts/worker_provision.sh", args:[vm_server_ip]
+
+  end
+
+end

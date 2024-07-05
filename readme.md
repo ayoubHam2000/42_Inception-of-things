@@ -2,7 +2,10 @@
 
 An Introduction to kubernetes using k3s and k3d.
 
-![](./static/1.jpg)
+<p align="center">
+  <img src="./static/1.jpg" />
+</p>
+
 
 ## Key Concepts
 - k3s
@@ -18,7 +21,7 @@ An Introduction to kubernetes using k3s and k3d.
 An open-source container orchestration platform that automates the deployment, scaling, and management of containerized applications.
 
 - Kubernetes Components
-  - **API Server**: the interface for Kubernetes.
+  - **API Server**: the frontend to the cluster's shared state through which all other components interact.
   - **etcd**: A distributed key-value store for storing cluster data.
   - **Scheduler**: Assigns workloads to nodes based on resource availability.
   - **Controller Manager**: A daemon that runs core control loops (controllers) responsible for regulating the state of the cluster. It manages various controllers, such as the node controller, replication controller, and endpoints controller, ensuring that the actual state of the cluster matches the desired state defined by the user.

@@ -1,29 +1,37 @@
-#install docker
+#!/bin/bash
 
-echo "Install docker"
-apk add --update docker openrc
-service docker start
+## Install K3s
 
-sleep 5
+echo "Install K3S"
 
-# install k3d
-echo "Install k3d"
-curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+curl -ksfL https://get.k3s.io | INSTALL_K3S_EXEC="server" K3S_KUBECONFIG_MODE="644" sh -s - --flannel-iface eth1
 
-echo "Create k3d cluster"
-sudo k3d cluster create newcluster
+## Deploy gitlab
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-# install kubectl
-echo "Install kubectl"
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+kubectl create namespace gitlab
 
+helm repo add gitlab https://charts.gitlab.io/
+
+helm repo update
+
+helm upgrade --install gitlab gitlab/gitlab --namespace gitlab --values ../confs/values.yaml
 
 
+## Forward
+
+kubectl port-forward svc/gitlab-webservice-default -n gitlab 80:8181 &
+
+## Get Secret 
+
+kubectl get secret -n gitlab gitlab-gitlab-initial-root-password -o jsonpath="{.data.password}" | base64 -d
 
 
+## ArgoCD
 echo "configure argocd"
+
 kubectl create namespace argocd
+
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 kubectl apply -f ./vagrant/config/application.yaml
@@ -32,4 +40,5 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 kubectl port-forward svc/argocd-server 8080:80 -n argocd --address='0.0.0.0'
 
+## /etc/host => gitlab.gitlab.io
 

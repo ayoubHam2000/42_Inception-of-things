@@ -29,7 +29,7 @@ An open-source container orchestration platform that automates the deployment, s
   - **Kube-Proxy**: Manages network rules and traffic routing.
 - kubectl
   - A command-line tool to interact with the Kubernetes API.
-Node
+- Node
   - A machine, either physical or virtual. There are two types:
     - **Master Node**
     - **Worker Node**
